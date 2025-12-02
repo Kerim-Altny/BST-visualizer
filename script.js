@@ -18,14 +18,18 @@ const TEXT_COLOR = '#FFFFFF';
 
 // Step Mode Logic
 let isStepMode = false;
-let nextStepResolver = null;
+let resolveStep = null;
 const nextStepBtn = document.getElementById('nextStepBtn');
+const treeTypeSelect = document.getElementById('treeType');
+const rotationMessage = document.getElementById('rotationMessage');
+
+let treeType = 'BST'; // 'BST' or 'AVL'
 
 // Helper for delays/steps
 const waitStep = async (ms = 500) => {
     if (isStepMode) {
         nextStepBtn.disabled = false;
-        await new Promise(resolve => nextStepResolver = resolve);
+        await new Promise(resolve => resolveStep = resolve);
         nextStepBtn.disabled = true;
     } else {
         await new Promise(resolve => setTimeout(resolve, ms));
@@ -104,12 +108,16 @@ class Tree {
         this.root = null;
     }
 
-    insert(value) {
+    async insert(value) {
         if (isNaN(value)) return;
         if (!this.root) {
             this.root = new Node(value, canvas.width / 2, 60);
         } else {
-            this.insertNode(this.root, value);
+            if (treeType === 'BST') {
+                this.insertNode(this.root, value);
+            } else {
+                this.root = await this.insertAVL(this.root, value);
+            }
         }
         this.updatePositions();
         this.updateStats();
@@ -131,10 +139,161 @@ class Tree {
         }
     }
 
-    delete(value) {
-        this.root = this.deleteNode(this.root, value);
+    async insertAVL(node, value) {
+        if (!node) return new Node(value, node ? node.x : canvas.width / 2, node ? node.y : 60);
+
+        if (value < node.value) {
+            node.left = await this.insertAVL(node.left, value);
+        } else if (value > node.value) {
+            node.right = await this.insertAVL(node.right, value);
+        } else {
+            return node; // Duplicate
+        }
+
+        // Removed updatePositions from here to prevent coordinate loss during recursion
+
+        const balance = this.getBalance(node);
+
+        // Left Left
+        if (balance > 1 && value < node.left.value) {
+            this.updatePositions(); // Show new node/imbalance
+            await this.showRotationMessage(node, "Right Rotation");
+            return this.rotateRight(node);
+        }
+        // Right Right
+        if (balance < -1 && value > node.right.value) {
+            this.updatePositions(); // Show new node/imbalance
+            await this.showRotationMessage(node, "Left Rotation");
+            return this.rotateLeft(node);
+        }
+        // Left Right
+        if (balance > 1 && value > node.left.value) {
+            this.updatePositions(); // Show new node/imbalance
+            await this.showRotationMessage(node.left, "Left Rotation (LR)");
+            node.left = this.rotateLeft(node.left);
+            this.updatePositions(); // Show intermediate state
+            await this.showRotationMessage(node, "Right Rotation (LR)");
+            return this.rotateRight(node);
+        }
+        // Right Left
+        if (balance < -1 && value < node.right.value) {
+            this.updatePositions(); // Show new node/imbalance
+            await this.showRotationMessage(node.right, "Right Rotation (RL)");
+            node.right = this.rotateRight(node.right);
+            this.updatePositions(); // Show intermediate state
+            await this.showRotationMessage(node, "Left Rotation (RL)");
+            return this.rotateLeft(node);
+        }
+
+        return node;
+    }
+
+    async delete(value) {
+        if (treeType === 'BST') {
+            this.root = this.deleteNode(this.root, value);
+        } else {
+            this.root = await this.deleteAVL(this.root, value);
+        }
         this.updatePositions();
         this.updateStats();
+    }
+
+    async deleteAVL(node, key) {
+        if (!node) return node;
+
+        if (key < node.value) {
+            node.left = await this.deleteAVL(node.left, key);
+        } else if (key > node.value) {
+            node.right = await this.deleteAVL(node.right, key);
+        } else {
+            if (!node.left || !node.right) {
+                let temp = node.left ? node.left : node.right;
+                if (!temp) {
+                    temp = node;
+                    node = null;
+                } else {
+                    node = temp;
+                }
+            } else {
+                let temp = this.findMin(node.right);
+                node.value = temp.value;
+                node.right = await this.deleteAVL(node.right, temp.value);
+            }
+        }
+
+        if (!node) return node;
+
+        // Removed updatePositions from here
+
+        const balance = this.getBalance(node);
+
+        // Left Left
+        if (balance > 1 && this.getBalance(node.left) >= 0) {
+            this.updatePositions();
+            await this.showRotationMessage(node, "Right Rotation");
+            return this.rotateRight(node);
+        }
+        // Left Right
+        if (balance > 1 && this.getBalance(node.left) < 0) {
+            this.updatePositions();
+            await this.showRotationMessage(node.left, "Left Rotation");
+            node.left = this.rotateLeft(node.left);
+            this.updatePositions();
+            await this.showRotationMessage(node, "Right Rotation");
+            return this.rotateRight(node);
+        }
+        // Right Right
+        if (balance < -1 && this.getBalance(node.right) <= 0) {
+            this.updatePositions();
+            await this.showRotationMessage(node, "Left Rotation");
+            return this.rotateLeft(node);
+        }
+        // Right Left
+        if (balance < -1 && this.getBalance(node.right) > 0) {
+            this.updatePositions();
+            await this.showRotationMessage(node.right, "Right Rotation");
+            node.right = this.rotateRight(node.right);
+            this.updatePositions();
+            await this.showRotationMessage(node, "Left Rotation");
+            return this.rotateLeft(node);
+        }
+
+        return node;
+    }
+
+    getHeight(node) {
+        if (!node) return 0;
+        return 1 + Math.max(this.getHeight(node.left), this.getHeight(node.right));
+    }
+
+    getBalance(node) {
+        if (!node) return 0;
+        return this.getHeight(node.left) - this.getHeight(node.right);
+    }
+
+    rotateRight(y) {
+        let x = y.left;
+        let T2 = x.right;
+        x.right = y;
+        y.left = T2;
+        return x;
+    }
+
+    rotateLeft(x) {
+        let y = x.right;
+        let T2 = y.left;
+        y.left = x;
+        x.right = T2;
+        return y;
+    }
+
+    async showRotationMessage(node, msg) {
+        node.highlightColor = '#FF0000'; // Red for imbalance
+        rotationMessage.innerText = `Performing ${msg} on Node ${node.value}`;
+        rotationMessage.style.display = 'block';
+        await waitStep(1500); // Slow animation
+        node.highlightColor = null;
+        rotationMessage.style.display = 'none';
     }
 
     deleteNode(node, key) {
@@ -506,8 +665,8 @@ document.getElementById('randomBtn').addEventListener('click', async () => {
     bst.clear(); // Clear existing tree first
     for (let i = 0; i < 15; i++) {
         const val = Math.floor(Math.random() * 100) + 1;
-        bst.insert(val);
-        await waitStep(500); // Wait for animation (approximate)
+        await bst.insert(val); // Await the insert (which handles animation/delays)
+        await waitStep(200); // Small extra delay between numbers
     }
     toggleButtons(false);
 });
@@ -516,15 +675,29 @@ document.getElementById('randomBtn').addEventListener('click', async () => {
 document.querySelectorAll('input[name="mode"]').forEach(radio => {
     radio.addEventListener('change', (e) => {
         isStepMode = e.target.value === 'step';
-        nextStepBtn.disabled = true;
+        if (!isStepMode) {
+            // Switched to Auto: Release any pending step
+            if (resolveStep) {
+                resolveStep();
+                resolveStep = null;
+            }
+            nextStepBtn.disabled = true;
+        } else {
+            nextStepBtn.disabled = true; // Will be enabled by waitStep
+        }
     });
 });
 
 nextStepBtn.addEventListener('click', () => {
-    if (nextStepResolver) {
-        nextStepResolver();
-        nextStepResolver = null;
+    if (resolveStep) {
+        resolveStep();
+        resolveStep = null;
     }
+});
+
+treeTypeSelect.addEventListener('change', (e) => {
+    treeType = e.target.value;
+    bst.clear();
 });
 
 function toggleButtons(disabled) {

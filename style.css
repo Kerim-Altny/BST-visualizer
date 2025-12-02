@@ -15,7 +15,8 @@ canvas {
 .stats-panel {
     position: absolute;
     top: 20px;
-    left: 20px;
+    right: 20px;
+    left: auto;
     background: rgba(30, 30, 46, 0.8);
     backdrop-filter: blur(10px);
     padding: 15px 20px;
@@ -62,6 +63,49 @@ canvas {
 .stat-item span {
     font-weight: bold;
     color: #00F5FF;
+}
+
+.tree-type-selector {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(30, 30, 46, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 20;
+}
+
+.tree-type-selector select {
+    background: #2A2A3C;
+    color: white;
+    border: 1px solid #444;
+    padding: 5px;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+}
+
+.rotation-message {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 0, 0, 0.2);
+    color: #FF4444;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid #FF4444;
+    font-weight: bold;
+    display: none;
+    z-index: 20;
+    backdrop-filter: blur(5px);
 }
 
 .output-panel {

@@ -8,39 +8,47 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-    <div class="stats-panel">
-        <h3>Tree Stats</h3>
-        <div class="stat-item">Height: <span id="statHeight">0</span></div>
-        <div class="stat-item">Nodes: <span id="statTotal">0</span></div>
-        <div class="stat-item">Leaves: <span id="statLeaves">0</span></div>
+<div class="tree-type-selector">
+    <label for="treeType">Tree Type:</label>
+    <select id="treeType">
+        <option value="BST">BST</option>
+        <option value="AVL">AVL</option>
+    </select>
+</div>
+<div id="rotationMessage" class="rotation-message"></div>
+
+<div class="stats-panel">
+    <h3>Tree Stats</h3>
+    <div class="stat-item">Height: <span id="statHeight">0</span></div>
+    <div class="stat-item">Nodes: <span id="statTotal">0</span></div>
+    <div class="stat-item">Leaves: <span id="statLeaves">0</span></div>
+</div>
+<canvas id="bstCanvas"></canvas>
+<div class="output-panel">
+    <span class="label" id="outputLabel">Output:</span>
+    <span id="outputContent"></span>
+</div>
+<div class="controls">
+    <div class="mode-selector">
+        <label><input type="radio" name="mode" value="auto" checked> Auto</label>
+        <label><input type="radio" name="mode" value="step"> Step</label>
     </div>
-    <canvas id="bstCanvas"></canvas>
-    <div class="output-panel">
-        <span class="label" id="outputLabel">Output:</span>
-        <span id="outputContent"></span>
-    </div>
-    <div class="controls">
-        <div class="mode-selector">
-            <label><input type="radio" name="mode" value="auto" checked> Auto</label>
-            <label><input type="radio" name="mode" value="step"> Step</label>
-        </div>
-        <button id="nextStepBtn" disabled>➡️ Next</button>
-        <div class="divider"></div>
-        <input type="number" id="valueInput" placeholder="Enter number">
-        <button id="insertBtn">Insert</button>
-        <button id="deleteBtn">Delete</button>
-        <button id="searchBtn">Search</button>
-        <span class="divider">|</span>
-        <button id="preOrderBtn">PreOrder</button>
-        <button id="inOrderBtn">InOrder</button>
-        <button id="postOrderBtn">PostOrder</button>
-        <span class="divider">|</span>
-        <button id="balanceBtn">Balance</button>
-        <button id="randomBtn">Random Tree</button>
-        <button id="clearBtn">Clear</button>
-    </div>
-    <script src="script.js"></script>
+    <button id="nextStepBtn" disabled>➡️ Next</button>
+    <div class="divider"></div>
+    <input type="number" id="valueInput" placeholder="Enter number">
+    <button id="insertBtn">Insert</button>
+    <button id="deleteBtn">Delete</button>
+    <button id="searchBtn">Search</button>
+    <span class="divider">|</span>
+    <button id="preOrderBtn">PreOrder</button>
+    <button id="inOrderBtn">InOrder</button>
+    <button id="postOrderBtn">PostOrder</button>
+    <span class="divider">|</span>
+    <button id="balanceBtn">Balance</button>
+    <button id="randomBtn">Random Tree</button>
+    <button id="clearBtn">Clear</button>
+</div>
+<script src="script.js"></script>
 </body>
 
 </html>
