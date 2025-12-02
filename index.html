@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BST Visualizer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <canvas id="bstCanvas"></canvas>
+    <div class="output-panel">
+        <span class="label" id="outputLabel">Output:</span>
+        <span id="outputContent"></span>
+    </div>
+    <div class="controls">
+        <input type="number" id="valueInput" placeholder="Enter number">
+        <button id="insertBtn">Insert</button>
+        <button id="deleteBtn">Delete</button>
+        <button id="searchBtn">Search</button>
+        <span class="divider">|</span>
+        <button id="preOrderBtn">PreOrder</button>
+        <button id="inOrderBtn">InOrder</button>
+        <button id="postOrderBtn">PostOrder</button>
+        <span class="divider">|</span>
+        <button id="balanceBtn">Balance</button>
+        <button id="randomBtn">Random Tree</button>
+        <button id="clearBtn">Clear</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
