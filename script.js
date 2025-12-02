@@ -106,10 +106,23 @@ class Node {
 class Tree {
     constructor() {
         this.root = null;
+        this.droppingNode = null;
     }
 
     async insert(value) {
         if (isNaN(value)) return;
+
+        // Determine drop target
+        let targetX = canvas.width / 2;
+        let targetY = 60;
+        if (this.root) {
+            targetX = this.root.x;
+            targetY = this.root.y;
+        }
+
+        // Sky Drop Animation
+        await this.animateDrop(value, targetX, targetY);
+
         if (!this.root) {
             this.root = new Node(value, canvas.width / 2, 60);
         } else {
@@ -121,6 +134,17 @@ class Tree {
         }
         this.updatePositions();
         this.updateStats();
+    }
+
+    async animateDrop(value, targetX, targetY) {
+        this.droppingNode = new Node(value, targetX, -50);
+        this.droppingNode.targetY = targetY;
+
+        // Wait until it's close enough
+        while (Math.abs(this.droppingNode.y - targetY) > 5) {
+            await waitStep(16);
+        }
+        this.droppingNode = null;
     }
 
     insertNode(node, value) {
@@ -523,6 +547,13 @@ function animate() {
         drawNodes(bst.root);
     }
 
+    if (bst.droppingNode) {
+        // Manually animate dropping node
+        const node = bst.droppingNode;
+        node.y += (node.targetY - node.y) * 0.1;
+        node.draw(ctx);
+    }
+
     ctx.restore();
     requestAnimationFrame(animate);
 }
@@ -586,7 +617,7 @@ function drawConnections(node) {
         ctx.moveTo(node.x, node.y);
         ctx.lineTo(node.left.x, node.left.y);
         ctx.strokeStyle = 'white';
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 3;
         ctx.stroke();
         drawConnections(node.left);
     }
@@ -595,7 +626,7 @@ function drawConnections(node) {
         ctx.moveTo(node.x, node.y);
         ctx.lineTo(node.right.x, node.right.y);
         ctx.strokeStyle = 'white';
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 3;
         ctx.stroke();
         drawConnections(node.right);
     }

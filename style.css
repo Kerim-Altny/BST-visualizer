@@ -113,17 +113,18 @@ canvas {
     bottom: 90px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(30, 30, 46, 0.9);
+    background: rgba(30, 30, 46, 0.95);
     backdrop-filter: blur(10px);
-    padding: 10px 20px;
-    border-radius: 8px;
+    padding: 10px 30px;
+    border-radius: 12px;
     display: none;
-    gap: 10px;
+    gap: 15px;
     align-items: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    min-width: 300px;
     justify-content: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 245, 255, 0.3);
+    min-width: 400px;
+    min-height: 60px;
     z-index: 10;
 }
 
@@ -131,13 +132,15 @@ canvas {
     color: #FF9F1C;
     font-weight: bold;
     text-transform: uppercase;
-    font-size: 0.9em;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
 }
 
 #outputContent {
     font-family: 'Consolas', 'Courier New', monospace;
-    font-size: 1.1em;
+    font-size: 1.2rem;
     color: #fff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
 .controls {
